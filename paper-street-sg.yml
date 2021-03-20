@@ -1,0 +1,604 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Deploys PaperStreet STG Security Group in the PaperStreet Stage  Environment
+Resources: 
+  PaperStreetBastionSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription:  Security Group that Applies to All AWS Cloud Servers - Dev, Stage, ProdEnvs in Stage environment
+      GroupName: FightClub-PaperStreet-STG-All-Servers-SG
+      SecurityGroupIngress:
+        -   CidrIp: 169.254.169.254/32
+            Description: Putty Access to AWS Cloud Servers - STG, CornFlowerBlue, Perf
+            FromPort: 22
+            IpProtocol: tcp
+            ToPort: 22
+        -   CidrIp: 169.254.169.254/32
+            Description: Putty Access to AWS Cloud Servers - STG, CornFlowerBlue, Perf
+            FromPort: 58443
+            IpProtocol: tcp
+            ToPort: 58447
+        -   CidrIp: 169.254.169.254/32
+            Description: Putty Access to AWS Cloud Servers - STG, CornFlowerBlue, Perf
+            FromPort: 58000
+            IpProtocol: tcp
+            ToPort: 58100
+        -   CidrIp: 169.254.169.254/32
+            Description: Putty Access to AWS Cloud Servers - STG, CornFlowerBlue, Perf
+            FromPort: 34234
+            IpProtocol: tcp
+            ToPort: 34234     
+        -   CidrIp: 169.254.169.254/32
+            Description: Putty Access to AWS Cloud Servers - STG, CornFlowerBlue, Perf
+            FromPort: 34234
+            IpProtocol: tcp
+            ToPort: 34234
+        -   CidrIp: 169.254.169.254/32
+            Description: Putty Access to AWS Cloud Servers - STG, CornFlowerBlue, Perf
+            FromPort: 34234
+            IpProtocol: tcp
+            ToPort: 34234
+      Tags:
+        - Key: Name
+          Value: FightClub-PaperStreet-STG-Bastion-Servers-SG
+      VpcId:
+        Fn::ImportValue: !Sub "PaperStreet-CornFlowerBlue-VPC-VPCID"
+
+  PaperStreetSTGWebSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Access to AWS Cloud Servers - Non Production (Dev & Stage)
+      GroupName: FightClub-PaperStreet-Dev-App
+      SecurityGroupIngress:
+        -   CidrIp: 169.254.169.254/32
+            Description: SSH
+            FromPort: 22
+            IpProtocol: tcp
+            ToPort: 22
+        -   CidrIp: 169.254.169.254/32
+            Description: SSH
+            FromPort: 22
+            IpProtocol: tcp
+            ToPort: 22
+        -   CidrIp: 169.254.169.254/32
+            Description: SSH
+            FromPort: 22
+            IpProtocol: tcp
+            ToPort: 22
+        -   CidrIp: 169.254.169.254/32
+            Description: Tyler Durden application ports
+            FromPort: 58443
+            IpProtocol: tcp
+            ToPort: 58447
+        -   CidrIp: 169.254.169.254/32
+            Description: Tyler Durden application ports
+            FromPort: 23423
+            IpProtocol: tcp
+            ToPort: 23425
+        -   CidrIp: 169.254.169.254/32
+            Description: Tyler Durden application ports
+            FromPort: 34234
+            IpProtocol: tcp
+            ToPort: 34234     
+        -   CidrIp: 169.254.169.254/32
+            Description: Tyler Durden application ports
+            FromPort: 39000
+            IpProtocol: tcp
+            ToPort: 39120
+        -   CidrIp: 169.254.169.254/32
+            Description: Tyler Durden application ports
+            FromPort: 34234
+            IpProtocol: tcp
+            ToPort: 34234 
+
+      Tags:
+        - Key: Name
+          Value: FightClub-PaperStreet-Dev-App-SG
+      VpcId:
+        Fn::ImportValue: !Sub "PaperStreet-CornFlowerBlue-VPC-VPCID"
+
+  PaperStreetSTGAppSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Access to AWS Cloud Servers - Non Production (Dev & Stage)
+      GroupName: FightClub-PaperStreet-Dev-App
+      SecurityGroupIngress:
+        -   CidrIp: 169.254.169.254/32
+            Description: SSH
+            FromPort: 22
+            IpProtocol: tcp
+            ToPort: 22
+        -   CidrIp: 169.254.169.254/32
+            Description: SSH
+            FromPort: 22
+            IpProtocol: tcp
+            ToPort: 22
+        -   CidrIp: 169.254.169.254/32
+            Description: SSH
+            FromPort: 22
+            IpProtocol: tcp
+            ToPort: 22
+        -   CidrIp: 169.254.169.254/32
+            Description: Tyler Durden application ports
+            FromPort: 58443
+            IpProtocol: tcp
+            ToPort: 58447
+        -   CidrIp: 169.254.169.254/32
+            Description: Tyler Durden application ports
+            FromPort: 23423
+            IpProtocol: tcp
+            ToPort: 23425
+        -   CidrIp: 169.254.169.254/32
+            Description: Tyler Durden application ports
+            FromPort: 34234
+            IpProtocol: tcp
+            ToPort: 34234     
+        -   CidrIp: 169.254.169.254/32
+            Description: Tyler Durden application ports
+            FromPort: 39000
+            IpProtocol: tcp
+            ToPort: 39120
+        -   CidrIp: 169.254.169.254/32
+            Description: Tyler Durden application ports
+            FromPort: 34234
+            IpProtocol: tcp
+            ToPort: 34234 
+
+      Tags:
+        - Key: Name
+          Value: FightClub-PaperStreet-Dev-App-SG
+      VpcId:
+        Fn::ImportValue: !Sub "PaperStreet-CornFlowerBlue-VPC-VPCID"
+
+
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Putty Access to AWS Cloud Servers - Non Production (Dev & Stage)
+      GroupName: FightClub-PaperStreet-Stage-App
+      SecurityGroupIngress:
+        -   CidrIp: 169.254.169.254/32
+            Description: SSH
+            FromPort: 22
+            IpProtocol: tcp
+            ToPort: 22
+        -   CidrIp: 169.254.169.254/32
+            Description: SSH
+            FromPort: 22
+            IpProtocol: tcp
+            ToPort: 22
+        -   CidrIp: 169.254.169.254/32
+            Description: SSH
+            FromPort: 22
+            IpProtocol: tcp
+            ToPort: 22
+        -   CidrIp: 169.254.169.254/32
+            Description: Tyler Durden application ports
+            FromPort: 58443
+            IpProtocol: tcp
+            ToPort: 58447
+        -   CidrIp: 169.254.169.254/32
+            Description: Tyler Durden application ports
+            FromPort: 23423
+            IpProtocol: tcp
+            ToPort: 23425
+        -   CidrIp: 169.254.169.254/32
+            Description: Tyler Durden application ports
+            FromPort: 34234
+            IpProtocol: tcp
+            ToPort: 34234     
+        -   CidrIp: 169.254.169.254/32
+            Description: Tyler Durden application ports
+            FromPort: 39000
+            IpProtocol: tcp
+            ToPort: 39120
+        -   CidrIp: 169.254.169.254/32
+            Description: Tyler Durden application ports
+            FromPort: 34234
+            IpProtocol: tcp
+            ToPort: 34234 
+
+        -   CidrIp: 169.254.169.254/32
+            Description: Not Tyler Durden app ports
+            FromPort: 23423
+            IpProtocol: tcp
+            ToPort: 23425
+        -   CidrIp: 169.254.169.254/32
+            Description: Not Tyler Durden app ports
+            FromPort: 23425
+            IpProtocol: tcp
+            ToPort: 23425     
+        -   CidrIp: 169.254.169.254/32
+            Description: Not Tyler Durden app ports
+            FromPort: 23425
+            IpProtocol: tcp
+            ToPort: 23425
+        -   CidrIp: 169.254.169.254/32
+            Description: Not Tyler Durden app ports
+            FromPort: 23425
+            IpProtocol: tcp
+            ToPort: 23425 
+        -   CidrIp: 169.254.169.254/32
+            Description: SSH to Tyler Durden
+            FromPort: 22
+            IpProtocol: tcp
+            ToPort: 22
+        -   CidrIp: 169.254.169.254/32
+            Description: Ping Tyler Durden
+            FromPort: -1
+            IpProtocol: icmp
+            ToPort: -1
+        -   CidrIp: 169.254.169.254/32
+            Description: SSH
+            FromPort: 23423
+            IpProtocol: tcp
+            ToPort: 23423      
+        -   CidrIp: 169.254.169.254/32
+            Description: SSH Tyler Durden
+            FromPort: 22
+            IpProtocol: tcp
+            ToPort: 22
+        -   CidrIp: 169.254.169.254/32
+            Description: Ping Tyler Durden
+            FromPort: -1
+            IpProtocol: icmp
+            ToPort: -1
+        -   CidrIp: 169.254.169.254/32
+            Description: Ping Tyler Durden
+            FromPort: 23432
+            IpProtocol: tcp
+            ToPort: 23423
+        -   CidrIp: 169.254.169.254/32
+            Description: Tyler Durden Ephermal Ports
+            FromPort: 59201
+            IpProtocol: tcp
+            ToPort: 23423 ### you get the idea :)
+      Tags:
+        - Key: Name
+          Value: FightClub-PaperStreet-Stage-App-SG
+      VpcId:
+        Fn::ImportValue: !Sub "PaperStreet-CornFlowerBlue-VPC-VPCID"
+
+  PaperStreetLoadBalSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allows communication from all servers to Load Balancer
+      GroupName: FightClub-PaperStreet-Load-Bal-SG
+      SecurityGroupIngress:
+        -   CidrIp: 169.254.169.254/32
+            Description: Tyler Durden Project Mayhem with PaperStreet Stage URLs
+            FromPort: 80
+            IpProtocol: tcp
+            ToPort: 80
+        -   CidrIp: 169.254.169.254/32
+            Description: Tyler Durden Project Mayhem with PaperStreet Stage URLs
+            FromPort: 443
+            IpProtocol: tcp
+            ToPort: 443
+        -   CidrIp: 169.254.169.254/32
+            Description: Tyler Durden Project Mayhem with PaperStreet Stage URLs
+            FromPort: 80
+            IpProtocol: tcp
+            ToPort: 80
+        -   CidrIp: 169.254.169.254/32
+            Description: Tyler Durden Project Mayhem with PaperStreet Stage URLs
+            FromPort: 443
+            IpProtocol: tcp
+            ToPort: 443
+        -   CidrIp: 169.254.169.254/32
+            Description: Tyler Durden Project Mayhem with PaperStreet Stage URLs
+            FromPort: 80
+            IpProtocol: tcp
+            ToPort: 80
+        -   CidrIp: 169.254.169.254/32
+            Description: Tyler Durden Project Mayhem with PaperStreet Stage URLs
+            FromPort: 443
+            IpProtocol: tcp
+            ToPort: 443
+        -   CidrIp: 169.254.169.254/32
+            Description: Tyler Durden Project Mayhem with PaperStreet Stage URLs
+            FromPort: 80
+            IpProtocol: tcp
+            ToPort: 80
+        -   CidrIp: 169.254.169.254/32
+            Description: Tyler Durden Project Mayhem with PaperStreet Stage URLs
+            FromPort: 443
+            IpProtocol: tcp
+            ToPort: 443
+        -   CidrIp: 169.254.169.254/32
+            Description: Tyler Durden Project Mayhem with PaperStreet Stage URLs
+            FromPort: 80
+            IpProtocol: tcp
+            ToPort: 80
+        -   CidrIp: 169.254.169.254/32
+            Description: Tyler Durden Project Mayhem with PaperStreet Stage URLs
+            FromPort: 443
+            IpProtocol: tcp
+            ToPort: 443
+        -   CidrIp: 169.254.169.254/32
+            Description: Tyler Durden Project Mayhem with PaperStreet Stage URLs
+            FromPort: 80
+            IpProtocol: tcp
+            ToPort: 80
+        -   CidrIp: 169.254.169.254/32
+            Description: Tyler Durden Project Mayhem with PaperStreet Stage URLs
+            FromPort: 443
+            IpProtocol: tcp
+            ToPort: 443
+        -   CidrIp: 169.254.169.254/32
+            Description: Tyler Durden Project Mayhem with PaperStreet Stage URLs
+            FromPort: 80
+            IpProtocol: tcp
+            ToPort: 80
+        -   CidrIp: 169.254.169.254/32
+            Description: Tyler Durden Project Mayhem with PaperStreet Stage URLs
+            FromPort: 443
+            IpProtocol: tcp
+            ToPort: 443
+        -   CidrIp: 169.254.169.254/32
+            Description: Tyler Durden Project Mayhem with PaperStreet Stage URLs
+            FromPort: 80
+            IpProtocol: tcp
+            ToPort: 80
+        -   CidrIp: 169.254.169.254/32
+            Description: Tyler Durden Project Mayhem with PaperStreet Stage URLs
+            FromPort: 443
+            IpProtocol: tcp
+            ToPort: 443
+        -   CidrIp: 169.254.169.254/32
+            Description: Tyler Durden Project Mayhem with PaperStreet Stage URLs
+            FromPort: 80
+            IpProtocol: tcp
+            ToPort: 80
+        -   CidrIp: 169.254.169.254/32
+            Description: Tyler Durden Project Mayhem with PaperStreet Stage URLs
+            FromPort: 443
+            IpProtocol: tcp
+            ToPort: 443
+        -   CidrIp: 169.254.169.254/32
+            Description: Tyler Durden Project Mayhem with PaperStreet Stage URLs
+            FromPort: 80
+            IpProtocol: tcp
+            ToPort: 80
+        -   CidrIp: 169.254.169.254/32
+            Description: Tyler Durden Project Mayhem with PaperStreet Stage URLs
+            FromPort: 443
+            IpProtocol: tcp
+            ToPort: 443
+        -   CidrIp: 169.254.169.254/32
+            Description: Tyler Durden Project Mayhem with PaperStreet Stage URLs
+            FromPort: 80
+            IpProtocol: tcp
+            ToPort: 80
+        -   CidrIp: 169.254.169.254/32
+            Description: Tyler Durden Project Mayhem with PaperStreet Stage URLs
+            FromPort: 443
+            IpProtocol: tcp
+            ToPort: 443
+        -   CidrIp: 169.254.169.254/32
+            Description: Tyler Durden Project Mayhem with PaperStreet Stage URLs
+            FromPort: 80
+            IpProtocol: tcp
+            ToPort: 80
+
+        -   CidrIp: 169.254.169.254/32
+            Description: All EC2s to the PaperStreet ALB
+            FromPort: 443
+            IpProtocol: tcp
+            ToPort: 443
+        -   CidrIp: 169.254.169.254/32
+            Description: All EC2s to the PaperStreet ALB
+            FromPort: 80
+            IpProtocol: tcp
+            ToPort: 80
+        -   CidrIp: 169.254.169.254/32
+            Description: All EC2s to the PaperStreet ALB
+            FromPort: 443
+            IpProtocol: tcp
+            ToPort: 443
+        -   CidrIp: 169.254.169.254/32
+            Description: All EC2s to the PaperStreet ALB
+            FromPort: 80
+            IpProtocol: tcp
+            ToPort: 80
+        -   CidrIp: 169.254.169.254/32
+            Description: All EC2s to the PaperStreet ALB
+            FromPort: 443
+            IpProtocol: tcp
+            ToPort: 443
+        -   CidrIp: 169.254.169.254/32
+            Description: All EC2s to the PaperStreet ALB
+            FromPort: 80
+            IpProtocol: tcp
+            ToPort: 80
+        -   CidrIp: 169.254.169.254/32
+            Description: All EC2s to the PaperStreet ALB
+            FromPort: 443
+            IpProtocol: tcp
+            ToPort: 443
+        -   CidrIp: 169.254.169.254/32
+            Description: All EC2s to the PaperStreet ALB
+            FromPort: 80
+            IpProtocol: tcp
+            ToPort: 80
+        -   CidrIp: 169.254.169.254/32
+            Description: All EC2s to the PaperStreet ALB
+            FromPort: 443
+            IpProtocol: tcp
+            ToPort: 443
+        -   CidrIp: 169.254.169.254/32
+            Description: All EC2s to the PaperStreet ALB
+            FromPort: 80
+            IpProtocol: tcp
+            ToPort: 80
+        -   CidrIp: 169.254.169.254/32
+            Description: All EC2s to the PaperStreet ALB
+            FromPort: 443
+            IpProtocol: tcp
+            ToPort: 443
+        -   CidrIp: 169.254.169.254/32
+            Description: All EC2s to the PaperStreet ALB
+            FromPort: 80
+            IpProtocol: tcp
+            ToPort: 80
+        -   CidrIp: 169.254.169.254/32
+            Description: All EC2s to the PaperStreet ALB
+            FromPort: 443
+            IpProtocol: tcp
+            ToPort: 443
+        -   CidrIp: 169.254.169.254/32
+            Description: All EC2s to the PaperStreet ALB
+            FromPort: 80
+            IpProtocol: tcp
+            ToPort: 80
+        -   CidrIp: 169.254.169.254/32
+            Description: All EC2s to the PaperStreet ALB
+            FromPort: 443
+            IpProtocol: tcp
+            ToPort: 443
+        -   CidrIp: 169.254.169.254/32
+            Description: All EC2s to the PaperStreet ALB
+            FromPort: 80
+            IpProtocol: tcp
+            ToPort: 80
+        -   CidrIp: 169.254.169.254/32
+            Description: All EC2s to the PaperStreet ALB
+            FromPort: 443
+            IpProtocol: tcp
+            ToPort: 443
+        -   CidrIp: 169.254.169.254/32
+            Description: All EC2s to the PaperStreet ALB
+            FromPort: 80
+            IpProtocol: tcp
+            ToPort: 80
+        -   CidrIp: 169.254.169.254/32
+            Description: All EC2s to the PaperStreet ALB
+            FromPort: 443
+            IpProtocol: tcp
+            ToPort: 443
+        -   CidrIp: 169.254.169.254/32
+            Description: All EC2s to the PaperStreet ALB
+            FromPort: 80
+            IpProtocol: tcp
+            ToPort: 80
+        -   CidrIp: 169.254.169.254/32
+            Description: All EC2s to the PaperStreet ALB
+            FromPort: 443
+            IpProtocol: tcp
+            ToPort: 443
+        -   CidrIp: 169.254.169.254/32
+            Description: All EC2s to the PaperStreet ALB
+            FromPort: 80
+            IpProtocol: tcp
+            ToPort: 80
+        -   CidrIp: 169.254.169.254/32
+            Description: All EC2s to the PaperStreet ALB
+            FromPort: 443
+            IpProtocol: tcp
+            ToPort: 443
+        -   CidrIp: 169.254.169.254/32
+            Description: All EC2s to the PaperStreet ALB
+            FromPort: 80
+            IpProtocol: tcp
+            ToPort: 80
+        -   CidrIp: 169.254.169.254/32
+            Description: All EC2s to the PaperStreet ALB
+            FromPort: 443
+            IpProtocol: tcp
+            ToPort: 443
+        -   CidrIp: 169.254.169.254/32
+            Description: All EC2s to the PaperStreet ALB
+            FromPort: 80
+            IpProtocol: tcp
+            ToPort: 80
+      Tags:
+        - Key: Name
+          Value: FightClub-PaperStreet-Load-Bal-SG
+      VpcId:
+        Fn::ImportValue: !Sub "PaperStreet-CornFlowerBlue-VPC-VPCID"
+
+  PaperStreetSTGDBSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allows communication to project mayhem database
+      GroupName: FightClub-PaperStreet-STG-DB-SG
+      SecurityGroupIngress:
+      -   CidrIp: 169.254.169.254/32
+          Description: Bastion Host to AWS DB - STG, CornFlowerBlue, Perf
+          FromPort: 5432
+          IpProtocol: tcp
+          ToPort: 5433
+      -   CidrIp: 169.254.169.254/32
+          Description: PaperStreet STG App servers to the STG DB
+          FromPort: 5432
+          IpProtocol: tcp
+          ToPort: 5433
+      -   CidrIp: 169.254.169.254/32
+          Description: PaperStreet STG App servers to the STG DB
+          FromPort: 5432
+          IpProtocol: tcp
+          ToPort: 5433
+      Tags:
+        - Key: Name
+          Value: FightClub-PaperStreet-STG-DB-SG
+      VpcId:
+        Fn::ImportValue: !Sub "PaperStreet-CornFlowerBlue-VPC-VPCID"
+
+  PaperStreetSTGEFSSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allows communication to database
+      GroupName: FightClub-PaperStreet-STG-EFS-SG
+      SecurityGroupIngress:
+      -   CidrIp: 169.254.169.254/23
+          Description: EC2 with shared storage
+          FromPort: 2049
+          IpProtocol: tcp
+          ToPort: 2049
+      Tags:
+        - Key: Name
+          Value: FightClub-PaperStreet-STG-EFS-SG
+      VpcId:
+        Fn::ImportValue: !Sub "PaperStreet-CornFlowerBlue-VPC-VPCID"
+
+### Outputs 
+Outputs:
+  PaperStreetBastionSGID:
+    Description: Security group ID for PaperStreet All server access Security group
+    Value: !Ref PaperStreetBastionSG
+    Export:
+      Name:
+        Fn::Sub: "${AWS::StackName}-PaperStreetBastionSG-SecurityGroupID"
+
+  PaperStreetSTGWebSGID:
+    Description: Security group ID for PaperStreet STG Web Security group
+    Value: !Ref PaperStreetSTGWebSG
+    Export:
+      Name:
+        Fn::Sub: "${AWS::StackName}-PaperStreetSTGWebSG-SecurityGroupID"
+
+  PaperStreetSTGAppSGID:
+    Description: Security group ID for PaperStreet STG App Security group
+    Value: !Ref PaperStreetSTGAppSG
+    Export:
+      Name:
+        Fn::Sub: "${AWS::StackName}-PaperStreetSTGAppSG-SecurityGroupID"
+
+  PaperStreetLoadBalSGID:
+    Description: Security group ID for PaperStreet Load Balancer Security group
+    Value: !Ref PaperStreetLoadBalSG
+    Export:
+      Name:
+        Fn::Sub: "${AWS::StackName}-PaperStreetLoadBalSG-SecurityGroupID"
+
+  PaperStreetSTGDBSGID:
+    Description: Security group ID for PaperStreet STG DB Security group
+    Value: !Ref PaperStreetSTGDBSG
+    Export:
+      Name:
+        Fn::Sub: "${AWS::StackName}-PaperStreetSTGDBSG-SecurityGroupID"
+
+  PaperStreetSTGEFSSGID:
+    Description: Security group ID for PaperStreet STG EFS Security group
+    Value: !Ref PaperStreetSTGEFSSG
+    Export:
+      Name:
+        Fn::Sub: "${AWS::StackName}-PaperStreetSTGEFSSG-SecurityGroupID"

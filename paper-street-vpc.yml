@@ -1,0 +1,311 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Creates PaperStreet STG FightClub VPC, Subnets, VPC DHCP Options, Flowlogs, S3 Endpoint
+Resources:
+### VPC ####
+  PaperStreetSTGFightClubVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 169.254.169.254/24
+      EnableDnsHostnames: false
+      EnableDnsSupport: false
+      InstanceTenancy: dedicated
+      Tags:
+        - Key: Name
+          Value: PaperStreet-PRE-PROD
+
+  VpcCidrBlock:
+    Type: AWS::EC2::VPCCidrBlock
+    Properties:
+      VpcId: !Ref PaperStreetSTGFightClubVPC
+      CidrBlock: 169.254.169.254/23
+
+
+### Subnets ### 
+  StageWebAZ1Subnet:
+    Type: AWS::EC2::Subnet
+    DependsOn: 
+      - VpcCidrBlock
+    Properties:
+      AvailabilityZone: us-east-1a
+      CidrBlock: 169.254.169.254/27
+      Tags:
+        - Key: Name
+          Value: Stage-Web-AZ1-Subnet
+      VpcId: !Ref PaperStreetSTGFightClubVPC
+
+  StageWebAZ2Subnet:
+    Type: AWS::EC2::Subnet
+    DependsOn: 
+      - StageWebAZ1Subnet
+    Properties:
+      AvailabilityZone: us-east-1b
+      CidrBlock: 169.254.169.254/27
+      Tags:
+        - Key: Name
+          Value: Stage-Web-AZ2-Subnet
+      VpcId: !Ref PaperStreetSTGFightClubVPC
+
+  StageAppAZ1Subnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: us-east-1a
+      CidrBlock: 169.254.169.254/27
+      Tags:
+        - Key: Name
+          Value: Stage-App-AZ1-Subnet
+      VpcId: !Ref PaperStreetSTGFightClubVPC
+
+  StageAppAZ2Subnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: us-east-1b
+      CidrBlock: 169.254.169.254/27
+      Tags:
+        - Key: Name
+          Value: Stage-App-AZ2-Subnet
+      VpcId: !Ref PaperStreetSTGFightClubVPC
+
+  PerfWebAZ1Subnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: us-east-1a
+      CidrBlock: 169.254.169.254/27
+      Tags:
+        - Key: Name
+          Value: Perf-Web-AZ1-Subnet
+      VpcId: !Ref PaperStreetSTGFightClubVPC
+
+  PerfWebAZ2Subnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: us-east-1b
+      CidrBlock: 169.254.169.254/27
+      Tags:
+        - Key: Name
+          Value: Perf-Web-AZ2-Subnet
+      VpcId: !Ref PaperStreetSTGFightClubVPC
+  PerfAppAZ1Subnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: us-east-1a
+      CidrBlock: 169.254.169.254/27
+      Tags:
+        - Key: Name
+          Value: Perf-App-AZ1-Subnet
+      VpcId: !Ref PaperStreetSTGFightClubVPC
+  PerfAppAZ2Subnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: us-east-1b
+      CidrBlock: 169.254.169.254/27
+      Tags:
+        - Key: Name
+          Value: Perf-App-AZ2-Subnet
+      VpcId: !Ref PaperStreetSTGFightClubVPC
+  FightClubDBAZ1Subnet:
+    Type: AWS::EC2::Subnet
+    DependsOn: 
+      - VpcCidrBlock
+    Properties:
+      AvailabilityZone: us-east-1a
+      CidrBlock: 169.254.169.254/28
+      Tags:
+        - Key: Name
+          Value: FightClub-DB-AZ1-Subnet
+      VpcId: !Ref PaperStreetSTGFightClubVPC
+
+  FightClubDBAZ2Subnet:
+    Type: AWS::EC2::Subnet
+    DependsOn: 
+      - FightClubDBAZ1Subnet
+    Properties:
+      AvailabilityZone: us-east-1b
+      CidrBlock: 169.254.169.254/28
+      Tags:
+        - Key: Name
+          Value: FightClub-DB-AZ2-Subnet
+      VpcId: !Ref PaperStreetSTGFightClubVPC
+
+### DHCP Options ###
+  VPCDHCPOptions:
+    Type: AWS::EC2::DHCPOptions
+    Properties:
+      DomainName: PaperStreet.admin
+      DomainNameServers:
+        - 169.254.169.254, 169.254.169.254
+      NetbiosNameServers:
+        - 169.254.169.254, 169.254.169.254
+      NetbiosNodeType: 2
+      NtpServers:
+        - 169.254.169.254, 169.254.169.254
+      Tags:
+        - Key: Name
+          Value: Tenncare.local
+  VPCDHCPOptionsAssociation:
+    Type: AWS::EC2::VPCDHCPOptionsAssociation
+    Properties:
+      DhcpOptionsId: !Ref VPCDHCPOptions
+      VpcId: !Ref PaperStreetSTGFightClubVPC
+
+### VPC Flow Logs ###
+  VPCFlowLogPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument: {
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Sid": "VisualEditor0",
+                "Effect": "Allow",
+                "Action": [
+                    "logs:CreateLogStream",
+                    "logs:DescribeLogGroups",
+                    "logs:DescribeLogStreams",
+                    "logs:CreateLogGroup",
+                    "logs:PutLogEvents"
+                ],
+                "Resource": "*"
+            }
+        ]
+    }
+      PolicyName: PaperStreetSTG-FightClub-VPC-Flowlogs
+      Roles:
+        - !Ref VPCFlowLogRole
+  VPCFlowLogRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument: {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Effect": "Allow",
+            "Principal": {
+              "Service": "vpc-flow-logs.amazonaws.com"
+            },
+            "Action": "sts:AssumeRole"
+          }
+        ]
+      }
+      Description: Allows VPC Flow Logs to be written to CloudWatch Logs.
+      RoleName: PaperStreetSTG-FightClub-VPC-Flowlogs
+      Tags:
+        - Key: Name
+          Value: TennCare-PaperStreetSTG-FightClub-VPC-Flowlogs
+  FlowLog:
+    Type: AWS::EC2::FlowLog
+    Properties:
+      DeliverLogsPermissionArn: !GetAtt VPCFlowLogRole.Arn
+      LogGroupName: !Ref LogGroup
+      ResourceId: !Ref PaperStreetSTGFightClubVPC
+      ResourceType: VPC
+      TrafficType: ALL
+    DependsOn: LogGroup
+  LogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: TennCare-PaperStreetSTG-FightClub-VPC-Flowlogs
+
+### S3 Endpoint ###
+  VPCS3Endpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:
+      ServiceName: com.amazonaws.us-east-1.s3
+      VpcId: !Ref PaperStreetSTGFightClubVPC
+
+### Output ###
+Outputs:
+  VPCId:
+    Description: VPC IDs
+    Value:
+      Ref: PaperStreetSTGFightClubVPC
+    Export:
+      Name:
+        Fn::Sub: "${AWS::StackName}-VPCID"
+
+  PrimaryCidrBlock:
+    Description: Primary CIDR Block 
+    Value: !GetAtt PaperStreetSTGFightClubVPC.CidrBlock
+
+  CidrBlockAssociation:
+    Description: Database CIDR Block 
+    Value: !Select [ 0, !GetAtt PaperStreetSTGFightClubVPC.CidrBlockAssociations ]
+
+  StageWebAZ1Subnet:
+    Description: The subnet ID to use for stage web servers
+    Value:
+      Ref: StageWebAZ1Subnet
+    Export:
+      Name:
+        Fn::Sub: "${AWS::StackName}-StageWebAZ1Subnet-SubnetID"
+
+  StageWebAZ2Subnet:
+    Description: The subnet ID to use for stage web servers
+    Value:
+      Ref: StageWebAZ2Subnet
+    Export:
+      Name:
+        Fn::Sub: "${AWS::StackName}-StageWebAZ2Subnet-SubnetID"
+        
+  StageAppAZ1Subnet:
+    Description: The subnet ID to use for stage app servers
+    Value:
+      Ref: StageAppAZ1Subnet
+    Export:
+      Name:
+        Fn::Sub: "${AWS::StackName}-StageAppAZ1Subnet-SubnetID"
+
+  StageAppAZ2Subnet:
+    Description: The subnet ID to use for stage app servers
+    Value:
+      Ref: StageAppAZ2Subnet
+    Export:
+      Name:
+        Fn::Sub: "${AWS::StackName}-StageAppAZ2Subnet-SubnetID"
+
+  PerfWebAZ1Subnet:
+    Description: The subnet ID to use for stage perf web servers
+    Value:
+      Ref: PerfWebAZ1Subnet
+    Export:
+      Name:
+        Fn::Sub: "${AWS::StackName}-PerfWebAZ1Subnet-SubnetID"
+
+  PerfWebAZ2Subnet:
+    Description: The subnet ID to use for stage perf web servers
+    Value:
+      Ref: PerfWebAZ2Subnet
+    Export:
+      Name:
+        Fn::Sub: "${AWS::StackName}-PerfWebAZ2Subnet-SubnetID"
+
+  PerfAppAZ1Subnet:
+    Description: The subnet ID to use for stage perf app servers
+    Value:
+      Ref: PerfAppAZ1Subnet
+    Export:
+      Name:
+        Fn::Sub: "${AWS::StackName}-PerfAppAZ1Subnet-SubnetID"
+
+  PerfAppAZ2Subnet:
+    Description: The subnet ID to use for stage perf app servers
+    Value:
+      Ref: PerfAppAZ2Subnet
+    Export:
+      Name:
+        Fn::Sub: "${AWS::StackName}-PerfAppAZ2Subnet-SubnetID"
+
+  FightClubDBAZ1Subnet:
+    Description: The subnet ID to use for Project Mayhem database
+    Value:
+      Ref: FightClubDBAZ1Subnet
+    Export:
+      Name:
+        Fn::Sub: "${AWS::StackName}-FightClubDBAZ1Subnet-SubnetID"
+
+  FightClubDBAZ2Subnet:
+    Description: The subnet ID to use for FightClub database
+    Value:
+      Ref: FightClubDBAZ2Subnet
+    Export:
+      Name:
+        Fn::Sub: "${AWS::StackName}-FightClubDBAZ2Subnet-SubnetID"

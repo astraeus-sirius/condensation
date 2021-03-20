@@ -1,0 +1,368 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Deploys 4 PaperStreet Stage Servers in the PaperStreet Mayhem Environment
+Resources:
+  PaperStreetWeb01:
+    Type: AWS::EC2::Instance
+    Properties:
+      IamInstanceProfile: FightClub-STG-SSM-Role
+      AvailabilityZone: us-east-1a
+      PrivateIpAddress: 169.254.169.254
+      BlockDeviceMappings:
+        -   DeviceName: /dev/sda1
+            Ebs:
+              VolumeSize: 30
+              Encrypted: true
+              KmsKeyId: MarlaSingerKMSID
+      DisableApiTermination: false
+      ImageId: ikea-furniture
+      InstanceType: c5.2xlarge
+      KeyName: FightClub-PaperStreet-Mayhem
+      SecurityGroupIds:
+        - !Ref PaperStreetStageADSG
+        - !Ref PaperStreetStageCentrifySG
+        - !Ref PaperStreetSTGSG
+        - Fn::ImportValue: !Sub "PaperStreet-FC-SG-PaperStreetAllSG-SecurityGroupID"
+        - Fn::ImportValue: !Sub "PaperStreet-FC-SG-PaperStreetSTGEFSSG-SecurityGroupID"
+        - Fn::ImportValue: !Sub "PaperStreet-FC-SG-PaperStreetSTGWebSG-SecurityGroupID"
+      SubnetId: 
+        Fn::ImportValue: !Sub "PaperStreet-FC-VPC-StageWebAZ1Subnet-SubnetID"
+      Tags:
+        - Key: Name
+          Value: PaperStreetWeb01
+        - Key: Owner
+          Value: '072134037177'
+        - Key: Host-Name
+          Value: PaperStreetWeb01
+        - Key: OS
+          Value: RHEL
+        - Key: Environment
+          Value: STG
+        - Key: Function
+          Value: WEB
+        - Key: AMIBackUp
+          Value: Yes
+        - Key: Patch Group
+          Value: 'false'
+        - Key: Encryption
+          Value: 'true'
+        - Key: Business Unit
+          Value: FightClub-Cloud-BU
+        - Key: Project
+          Value: PaperStreet
+        - Key: Compliance
+          Value: 'true'
+        - Key: Application
+          Value: PaperStreet
+        - Key: Zone 
+          Value: 1
+      Tenancy: dedicated
+
+  PaperStreetWeb01Volume:
+    Type: AWS::EC2::Volume
+    Properties:
+      AvailabilityZone: !GetAtt PaperStreetWeb01.AvailabilityZone
+      Encrypted: true
+      KmsKeyId: MarlaSingerKMSID
+      Size: 200
+      Tags:
+        - Key: Name
+          Value: PaperStreetWeb01
+      VolumeType: gp2
+    DependsOn: PaperStreetWeb01
+
+  PaperStreetWeb01MountPoint:
+    Type: AWS::EC2::VolumeAttachment
+    Properties:
+      InstanceId: !Ref PaperStreetWeb01
+      VolumeId: !Ref PaperStreetWeb01Volume
+      Device: /dev/sdm
+    DependsOn: PaperStreetWeb01Volume
+
+  PaperStreetWeb02:
+    Type: AWS::EC2::Instance
+    Properties:
+      IamInstanceProfile: FightClub-STG-SSM-Role
+      AvailabilityZone: us-east-1b
+      PrivateIpAddress: 169.254.169.254
+      BlockDeviceMappings:
+        -   DeviceName: /dev/sda1
+            Ebs:
+              VolumeSize: 30
+              Encrypted: true
+              KmsKeyId: MarlaSingerKMSID
+      DisableApiTermination: false
+      ImageId: ikea-furniture
+      InstanceType: c5.2xlarge
+      KeyName: FightClub-dcloud-PaperStreet-Mayhem
+      SecurityGroupIds:
+        - !Ref PaperStreetStageADSG
+        - !Ref PaperStreetStageCentrifySG
+        - !Ref PaperStreetSTGSG
+        - Fn::ImportValue: !Sub "PaperStreet-FC-SG-PaperStreetAllSG-SecurityGroupID"
+        - Fn::ImportValue: !Sub "PaperStreet-FC-SG-PaperStreetSTGEFSSG-SecurityGroupID"
+        - Fn::ImportValue: !Sub "PaperStreet-FC-SG-PaperStreetSTGWebSG-SecurityGroupID"
+      SubnetId: 
+        Fn::ImportValue: !Sub "PaperStreet-FC-VPC-StageWebAZ2Subnet-SubnetID"
+      Tags:
+        - Key: Name
+          Value: PaperStreetWeb02
+        - Key: Owner
+          Value: '072134037177'
+        - Key: Host-Name
+          Value: PaperStreetWeb02
+        - Key: OS
+          Value: RHEL
+        - Key: Environment
+          Value: STG
+        - Key: Function
+          Value: WEB
+        - Key: AMIBackUp
+          Value: Yes
+        - Key: Encryption
+          Value: 'true'
+        - Key: Business Unit
+          Value: FightClub-Cloud-BU
+        - Key: Project
+          Value: PaperStreet
+        - Key: Compliance
+          Value: 'true'
+        - Key: Application
+          Value: PaperStreet
+        - Key: Zone 
+          Value: 2
+      Tenancy: dedicated
+
+  PaperStreetWeb02Volume:
+    Type: AWS::EC2::Volume
+    Properties:
+      AvailabilityZone: !GetAtt PaperStreetWeb02.AvailabilityZone
+      Encrypted: true
+      KmsKeyId: MarlaSingerKMSID
+      Size: 200
+      Tags:
+        - Key: Name
+          Value: PaperStreetWeb02
+      VolumeType: gp2
+    DependsOn: PaperStreetWeb02
+
+  PaperStreetWeb02MountPoint:
+    Type: AWS::EC2::VolumeAttachment
+    Properties:
+      InstanceId: !Ref PaperStreetWeb02
+      VolumeId: !Ref PaperStreetWeb02Volume
+      Device: /dev/sdm
+    DependsOn: PaperStreetWeb02Volume
+
+  PaperStreetApp01:
+    Type: AWS::EC2::Instance
+    Properties:
+      IamInstanceProfile: FightClub-STG-SSM-Role
+      AvailabilityZone: us-east-1a
+      PrivateIpAddress: 169.254.169.254
+      BlockDeviceMappings:
+        -   DeviceName: /dev/sda1
+            Ebs:
+              VolumeSize: 30
+              Encrypted: true
+              KmsKeyId: MarlaSingerKMSID
+      DisableApiTermination: false
+      ImageId: ikea-furniture
+      InstanceType: c5.4xlarge
+      KeyName: FightClub-dcloud-PaperStreet-Mayhem
+      SecurityGroupIds:
+        - !Ref PaperStreetStageADSG
+        - !Ref PaperStreetStageCentrifySG
+        - !Ref PaperStreetSTGSG
+        - Fn::ImportValue: !Sub "PaperStreet-FC-SG-PaperStreetAllSG-SecurityGroupID"
+        - Fn::ImportValue: !Sub "PaperStreet-FC-SG-PaperStreetSTGEFSSG-SecurityGroupID"
+        - Fn::ImportValue: !Sub "PaperStreet-FC-SG-PaperStreetSTGAppSG-SecurityGroupID"
+      SubnetId: 
+        Fn::ImportValue: !Sub "PaperStreet-FC-VPC-StageAppAZ1Subnet-SubnetID"
+      Tags:
+        - Key: Name
+          Value: PaperStreetApp01
+        - Key: Owner
+          Value: '072134037177'
+        - Key: Host-Name
+          Value: PaperStreetApp01
+        - Key: OS
+          Value: RHEL
+        - Key: Environment
+          Value: STG
+        - Key: Function
+          Value: App Server
+        - Key: AMIBackUp
+          Value: Yes
+        - Key: Patch Group
+          Value: 'false'
+        - Key: Encryption
+          Value: 'true'
+        - Key: Business Unit
+          Value: FightClub-Cloud-BU
+        - Key: Project
+          Value: PaperStreet
+        - Key: Application
+          Value: PaperStreet
+        - Key: Zone 
+          Value: 1
+      Tenancy: dedicated
+
+  PaperStreetApp01Volume:
+    Type: AWS::EC2::Volume
+    Properties:
+      AvailabilityZone: !GetAtt PaperStreetApp01.AvailabilityZone
+      Encrypted: true
+      KmsKeyId: MarlaSingerKMSID
+      Size: 200
+      Tags:
+        - Key: Name
+          Value: PaperStreetApp01
+      VolumeType: gp2
+    DependsOn: PaperStreetApp01
+
+  PaperStreetApp01MountPoint:
+    Type: AWS::EC2::VolumeAttachment
+    Properties:
+      InstanceId: !Ref PaperStreetApp01
+      VolumeId: !Ref PaperStreetApp01Volume
+      Device: /dev/sdm
+    DependsOn: PaperStreetApp01Volume
+      
+
+  PaperStreetApp02:
+    Type: AWS::EC2::Instance
+    Properties:
+      IamInstanceProfile: FightClub-STG-SSM-Role
+      AvailabilityZone: us-east-1b
+      PrivateIpAddress: 169.254.169.254
+      BlockDeviceMappings:
+        -   DeviceName: /dev/sda1
+            Ebs:
+              VolumeSize: 30
+              Encrypted: true
+              KmsKeyId: MarlaSingerKMSID
+      DisableApiTermination: false
+      ImageId: ikea-furniture
+      InstanceType: c5.4xlarge
+      KeyName: FightClub-dcloud-PaperStreet-Mayhem
+      SecurityGroupIds:
+        - !Ref PaperStreetStageADSG
+        - !Ref PaperStreetStageCentrifySG
+        - !Ref PaperStreetSTGSG
+        - Fn::ImportValue: !Sub "PaperStreet-FC-SG-PaperStreetAllSG-SecurityGroupID"
+        - Fn::ImportValue: !Sub "PaperStreet-FC-SG-PaperStreetSTGEFSSG-SecurityGroupID"
+        - Fn::ImportValue: !Sub "PaperStreet-FC-SG-PaperStreetSTGAppSG-SecurityGroupID"
+      SubnetId: 
+        Fn::ImportValue: !Sub "PaperStreet-FC-VPC-StageAppAZ2Subnet-SubnetID"
+      Tags:
+        - Key: Name
+          Value: PaperStreetApp02
+        - Key: Owner
+          Value: '072134037177'
+        - Key: Host-Name
+          Value: PaperStreetApp02
+        - Key: OS
+          Value: RHEL
+        - Key: Environment
+          Value: STG
+        - Key: Function
+          Value: App Server
+        - Key: AMIBackUp
+          Value: Yes
+        - Key: Patch Group
+          Value: 'false'
+        - Key: Encryption
+          Value: 'true'
+        - Key: Business Unit
+          Value: FightClub-Cloud-BU
+        - Key: Project
+          Value: PaperStreet
+        - Key: Application
+          Value: PaperStreet
+        - Key: Zone 
+          Value: 2
+      Tenancy: dedicated
+
+  PaperStreetApp02Volume:
+    Type: AWS::EC2::Volume
+    Properties:
+      AvailabilityZone: !GetAtt PaperStreetApp02.AvailabilityZone
+      Encrypted: true
+      KmsKeyId: MarlaSingerKMSID
+      Size: 200
+      Tags:
+        - Key: Name
+          Value: PaperStreetApp02
+      VolumeType: gp2
+    DependsOn: PaperStreetApp02
+
+  PaperStreetApp02MountPoint:
+    Type: AWS::EC2::VolumeAttachment
+    Properties:
+      InstanceId: !Ref PaperStreetApp02
+      VolumeId: !Ref PaperStreetApp02Volume
+      Device: /dev/sdm
+    DependsOn: PaperStreetApp02Volume
+
+###### Outputs 
+
+Outputs:
+  PaperStreetWeb01:
+    Description: The Instance ID of Stage Web 1
+    Value: !Ref PaperStreetWeb01
+    Export:
+      Name:
+        Fn::Sub: "${AWS::StackName}-PaperStreetWeb01-InstanceID"
+
+  PaperStreetWeb01PrivateIP:
+    Description: Private IP for PaperStreetWeb01
+    Value: !GetAtt 'PaperStreetWeb01.PrivateIp'
+
+  PaperStreetWeb01AvailabilityZone:
+    Description: Availability zone for PaperStreetWeb01
+    Value: !GetAtt 'PaperStreetWeb01.AvailabilityZone'
+
+  PaperStreetWeb02:
+    Description: The Instance ID of Stage Web 2
+    Value: !Ref PaperStreetWeb02
+    Export:
+      Name:
+        Fn::Sub: "${AWS::StackName}-PaperStreetWeb02-InstanceID"
+
+  PaperStreetWeb02PrivateIP:
+      Description: Private IP for PaperStreetWeb02
+      Value: !GetAtt 'PaperStreetWeb02.PrivateIp'
+      
+  PaperStreetWeb02AvailabilityZone:
+    Description: Availability zone for PaperStreetWeb02
+    Value: !GetAtt 'PaperStreetWeb02.AvailabilityZone'
+    
+  PaperStreetApp01:
+    Description: The Instance ID of Stage App 1
+    Value: !Ref PaperStreetApp01
+    Export:
+      Name:
+        Fn::Sub: "${AWS::StackName}-PaperStreetApp01-InstanceID"
+
+  PaperStreetApp01PrivateIP:
+      Description: Private IP for PaperStreetApp01
+      Value: !GetAtt 'PaperStreetApp01.PrivateIp'
+
+  PaperStreetApp01AvailabilityZone:
+    Description: Availability zone for PaperStreetApp01
+    Value: !GetAtt 'PaperStreetApp01.AvailabilityZone'
+
+  PaperStreetApp02:
+    Description: The Instance ID of Stage App 2
+    Value: !Ref PaperStreetApp02
+    Export:
+      Name:
+        Fn::Sub: "${AWS::StackName}-PaperStreetApp02-InstanceID"
+
+  PaperStreetApp02PrivateIP:
+      Description: Private IP for PaperStreetApp02
+      Value: !GetAtt 'PaperStreetApp02.PrivateIp'
+
+  PaperStreetApp02AvailabilityZone:
+    Description: Availability zone for PaperStreetApp02
+    Value: !GetAtt 'PaperStreetApp02.AvailabilityZone'

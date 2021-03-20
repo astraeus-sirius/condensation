@@ -1,0 +1,82 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: RDS build Scripts for Databses for the Non-Production Environment
+
+Parameters:
+  AccountSN:
+    Type: String
+    Default: FightClub
+  ProjName:
+    Type: String
+    Default: PaperStreet-DB
+  ProjShortName:
+    Type: String  
+    Default: PaperStreet
+
+  EnvName:
+    Type: String
+    Default: PaperStreet
+  RetentionPeriod:
+    Type: Number
+    Default: 1
+
+Mappings:
+  StoreDict:
+    MainDBArgs:
+      DBInstanceID: ProjectMayhemDB
+      DBInstanceSize: db.r5.2xlarge
+      DBEngine: Postgres
+      DBEngineVersion: 10.4
+      DBAllocatedStorage: 10
+      SelectedSubnetGroup: PaperStreet-ppd-subnet-group
+      KMSencrypt: MarlaSingerKMSID
+      SelectedSecurityGroup: Nonexistent
+      DBLiscenceModel: surprise
+      PrefMntWindow: sun:21:00-sun:22:00 
+      SelStorageType: gp2 
+      
+
+Resources:
+  PaperDBSubnetGroup: 
+    Properties: 
+      PaperStreetDBSubnetGroupName: PaperStreet-ppd-subnet-group
+      PaperDBSubnetGroupDescription: FightClub database subnet group Stage
+      SubnetIds: 
+        - Fn::ImportValue: !Sub "PaperStreet-PPD-VPC-PreProdDBAZ1Subnet-SubnetID"
+        - Fn::ImportValue: !Sub "PaperStreet-PPD-VPC-PreProdDBAZ2Subnet-SubnetID"
+      Tags: 
+        - 
+          Key: Name
+          Value: PaperStreet-ppd-subnet-group
+    Type: "AWS::RDS::PaperDBSubnetGroup"
+
+  ProjectMayhemDB:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      VPCSecurityGroups:
+        - !FindInMap [StoreDict , MainDBArgs, SelectedSecurityGroup]
+      DBInstanceIdentifier: !FindInMap [StoreDict , MainDBArgs, DBInstanceID]
+      LicenseModel: !FindInMap [StoreDict , MainDBArgs, DBLiscenceModel]
+      Engine: !FindInMap [StoreDict , MainDBArgs, DBEngine]
+      EngineVersion: !FindInMap [StoreDict , MainDBArgs, DBEngineVersion]
+      MultiAZ: true
+      PaperStreetDBSubnetGroupName: !FindInMap [StoreDict , MainDBArgs, SelectedSubnetGroup]
+      DBInstanceClass: !FindInMap [StoreDict , MainDBArgs, DBInstanceSize]
+      AllocatedStorage: !FindInMap [StoreDict , MainDBArgs, DBAllocatedStorage]
+      StorageType: !FindInMap [StoreDict , MainDBArgs, SelStorageType]
+      MasterUsername: '{{resolve:ssm:ProjectMayhemDB-Username:32}}'
+      MasterUserPassword: '{{resolve:ssm-secure:ProjectMayhemDB-Password:32}}'
+      PubliclyAccessible: false #flase because it violates the first rule.
+      Tags:
+        - Key: Name
+          Value: !Join ["-", [ !Ref AccountSN,!Ref ProjShortName,!Ref EnvName, "DB",
+                               !FindInMap [StoreDict , MainDBArgs, DBEngine]
+          ]]
+      BackupRetentionPeriod: !Ref RetentionPeriod
+      KmsKeyId: !FindInMap [StoreDict , MainDBArgs, KMSencrypt]
+      PreferredMaintenanceWindow: !FindInMap [StoreDict , MainDBArgs, PrefMntWindow]
+      StorageEncrypted: true
+
+Outputs:
+  ProjectMayhemDBOutputs:
+    Description: The Main Database Instance
+    Value: !Ref ProjectMayhemDB
